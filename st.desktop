@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Simple Terminal
+Comment=Simple terminal emulator
+Exec=/usr/local/bin/st
+Icon=terminal
+Terminal=false
+Type=Application
+Categories=System
