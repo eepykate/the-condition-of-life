@@ -14,6 +14,8 @@ Gauge Krahe's build of simple terminal with the following patches applied:
 
 - xresources
 
+- Bold Is Not Bright
+
 And the [Pop](https://gitlab.com/GaugeK/dots/raw/master/colours/Pop.png) colour scheme if Xresources isn't configured.
 
 ---
