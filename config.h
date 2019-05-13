@@ -186,6 +186,7 @@ ResourcePref resources[] = {
 		{ "termname",     STRING,  &termname },
 		{ "shell",        STRING,  &shell },
 		{ "xfps",         INTEGER, &xfps },
+		{ "alpha",        INTEGER, &alpha },
 		{ "actionfps",    INTEGER, &actionfps },
 		{ "blinktimeout", INTEGER, &blinktimeout },
 		{ "bellvolume",   INTEGER, &bellvolume },
