@@ -1,4 +1,9 @@
 /*
+ * Copyright 2018 Avi Halachmi (:avih) avihpit@yahoo.com https://github.com/avih
+ * MIT/X Consortium License
+ */
+
+/*
  * U+25XX codepoints data
  *
  * References:
@@ -11,13 +16,18 @@
 
 /* Each shape is encoded as 16-bits. Higher bits are category, lower are data */
 /* Categories (mutually exclusive except BDB): */
+/* For convenience, BDL/BDA/BBS/BDB are 1 bit each, the rest are enums */
 #define BDL (1<<8)   /* Box Draw Lines (light/double/heavy) */
 #define BDA (1<<9)   /* Box Draw Arc (light) */
+
 #define BBD (1<<10)  /* Box Block Down (lower) X/8 */
-#define BBL (1<<11)  /* Box Block Left X/8 */
-#define BBU (1<<12)  /* Box Block Upper X/8 */
-#define BBR (1<<13)  /* Box Block Right X/8 */
-#define BBQ (1<<14)  /* Box Block Quadrants */
+#define BBL (2<<10)  /* Box Block Left X/8 */
+#define BBU (3<<10)  /* Box Block Upper X/8 */
+#define BBR (4<<10)  /* Box Block Right X/8 */
+#define BBQ (5<<10)  /* Box Block Quadrants */
+#define BRL (6<<10)  /* Box Braille (data is lower byte of U28XX) */
+
+#define BBS (1<<14)  /* Box Block Shades */
 #define BDB (1<<15)  /* Box Draw is Bold */
 
 /* (BDL/BDA) Light/Double/Heavy x Left/Up/Right/Down/Horizontal/Vertical      */
@@ -49,7 +59,7 @@
 #define BL (1<<2)
 #define BR (1<<3)
 
-/* 138 shapes are supported: U+2500 - U+259F except dashes/diagonals/shades */
+/* Data for U+2500 - U+259F except dashes/diagonals */
 static const unsigned short boxdata[256] = {
 	/* light lines */
 	[0x00] = BDL + LH,       /* light horizontal */
@@ -196,7 +206,9 @@ static const unsigned short boxdata[256] = {
 	[0x9e] = BBQ + BL + TR,
 	[0x9f] = BBQ + BL + TR + BR,
 
+	/* Shades, data is an alpha value in 25% units (1/4, 1/2, 3/4) */
+	[0x91] = BBS + 1, [0x92] = BBS + 2, [0x93] = BBS + 3,
+
 	/* U+2504 - U+250B, U+254C - U+254F: unsupported (dashes) */
 	/* U+2571 - U+2573: unsupported (diagonals) */
-	/* U+2591 - U+2593: unsupported (shades) */
 };

@@ -40,7 +40,6 @@
 /* macros */
 #define IS_SET(flag)		((term.mode & (flag)) != 0)
 #define NUMMAXLEN(x)		((int)(sizeof(x) * 2.56 + 0.5) + 1)
-#define NUMMAXLEN(x)		((int)(sizeof(x) * 2.56 + 0.5) + 1)
 #define ISCONTROLC0(c)		(BETWEEN(c, 0, 0x1f) || (c) == '\177')
 #define ISCONTROLC1(c)		(BETWEEN(c, 0x80, 0x9f))
 #define ISCONTROL(c)		(ISCONTROLC0(c) || ISCONTROLC1(c))
@@ -1073,7 +1072,6 @@ tswapscreen(void)
 	term.mode ^= MODE_ALTSCREEN;
 	tfulldirt();
 }
-
 void
 kscrolldown(const Arg* a)
 {
@@ -1096,7 +1094,6 @@ void
 kscrollup(const Arg* a)
 {
 	int n = a->i;
-
 	if (n < 0)
 		n = term.row + n;
 
@@ -1296,7 +1293,7 @@ tsetchar(Rune u, Glyph *attr, int x, int y)
 	term.line[y][x] = *attr;
 	term.line[y][x].u = u;
 
-	if (boxdraw && isboxdraw(&term.line[y][x]))
+	if (isboxdraw(u))
 		term.line[y][x].mode |= ATTR_BOXDRAW;
 }
 
@@ -1999,56 +1996,6 @@ strparse(void)
 }
 
 void
-strdump(void)
-{
-	int i;
-	uint c;
-
-	fprintf(stderr, "ESC%c", strescseq.type);
-	for (i = 0; i < strescseq.len; i++) {
-		c = strescseq.buf[i] & 0xff;
-		if (c == '\0') {
-			putc('\n', stderr);
-			return;
-		} else if (isprint(c)) {
-			putc(c, stderr);
-		} else if (c == '\n') {
-			fprintf(stderr, "(\\n)");
-		} else if (c == '\r') {
-			fprintf(stderr, "(\\r)");
-		} else if (c == 0x1b) {
-			fprintf(stderr, "(\\e)");
-		} else {
-			fprintf(stderr, "(%02x)", c);
-		}
-	}
-	fprintf(stderr, "ESC\\\n");
-}
-
-void
-strreset(void)
-{
-	memset(&strescseq, 0, sizeof(strescseq));
-}
-
-void
-sendbreak(const Arg *arg)
-{
-	if (tcsendbreak(cmdfd, 0))
-		perror("Error sending break");
-}
-
-void
-tprinter(char *s, size_t len)
-{
-	if (iofd != -1 && xwrite(iofd, s, len) < 0) {
-		perror("Error writing to output file");
-		close(iofd);
-		iofd = -1;
-	}
-}
-
-void
 externalpipe(const Arg *arg)
 {
 	int to[2];
@@ -2099,6 +2046,56 @@ externalpipe(const Arg *arg)
 	close(to[1]);
 	/* restore */
 	signal(SIGPIPE, oldsigpipe);
+}
+
+void
+strdump(void)
+{
+	int i;
+	uint c;
+
+	fprintf(stderr, "ESC%c", strescseq.type);
+	for (i = 0; i < strescseq.len; i++) {
+		c = strescseq.buf[i] & 0xff;
+		if (c == '\0') {
+			putc('\n', stderr);
+			return;
+		} else if (isprint(c)) {
+			putc(c, stderr);
+		} else if (c == '\n') {
+			fprintf(stderr, "(\\n)");
+		} else if (c == '\r') {
+			fprintf(stderr, "(\\r)");
+		} else if (c == 0x1b) {
+			fprintf(stderr, "(\\e)");
+		} else {
+			fprintf(stderr, "(%02x)", c);
+		}
+	}
+	fprintf(stderr, "ESC\\\n");
+}
+
+void
+strreset(void)
+{
+	memset(&strescseq, 0, sizeof(strescseq));
+}
+
+void
+sendbreak(const Arg *arg)
+{
+	if (tcsendbreak(cmdfd, 0))
+		perror("Error sending break");
+}
+
+void
+tprinter(char *s, size_t len)
+{
+	if (iofd != -1 && xwrite(iofd, s, len) < 0) {
+		perror("Error writing to output file");
+		close(iofd);
+		iofd = -1;
+	}
 }
 
 void
@@ -2743,7 +2740,7 @@ draw(void)
 	drawregion(0, 0, term.col, term.row);
 	if (term.scr == 0)
 		xdrawcursor(cx, term.c.y, term.line[term.c.y][cx],
-				term.ocx, term.ocy, term.line[term.ocy][term.ocx]);
+			term.ocx, term.ocy, term.line[term.ocy][term.ocx]);
 	term.ocx = cx, term.ocy = term.c.y;
 	xfinishdraw();
 }

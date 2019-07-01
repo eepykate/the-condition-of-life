@@ -5,8 +5,8 @@
  *
  * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
  */
-static char *font = "Iosevka Term:pixelsize=14:antialias=true:autohint=true";
-static int borderpx = 15;
+static char *font = "Liberation Mono:pixelsize=12:antialias=true:autohint=true";
+static int borderpx = 2;
 
 /*
  * What program is execed by st depends of these precedence rules:
@@ -16,7 +16,7 @@ static int borderpx = 15;
  * 4: value of shell in /etc/passwd
  * 5: value of shell in config.h
  */
-static char *shell = "/bin/zsh";
+static char *shell = "/bin/sh";
 char *utmp = NULL;
 char *stty_args = "stty raw pass8 nl -echo -iexten -cstopb 38400";
 
@@ -42,8 +42,8 @@ static unsigned int tripleclicktimeout = 600;
 int allowaltscreen = 1;
 
 /* frames per second st should at maximum draw to the screen */
-static unsigned int xfps = 60;
-static unsigned int actionfps = 60;
+static unsigned int xfps = 120;
+static unsigned int actionfps = 30;
 
 /*
  * blinking timeout (set to 0 to disable blinking) for the terminal blinking
@@ -57,12 +57,16 @@ static unsigned int blinktimeout = 800;
 static unsigned int cursorthickness = 2;
 
 /*
- * 1: custom-draw (without using the font) most of the lines/blocks characters
- *    for gapless alignment between cells. This includes all the codepoints at
- *    U+2500 - U+259F except dashes, diagonals and shades.
- * 0: disable (render all glyphs normally from the font).
+ * 1: render most of the lines/blocks characters without using the font for
+ *    perfect alignment between cells (U2500 - U259F except dashes/diagonals).
+ *    Bold affects lines thickness if boxdraw_bold is not 0. Italic is ignored.
+ * 0: disable (render all U25XX glyphs normally from the font).
  */
-const int boxdraw = 1;
+const int boxdraw = 0;
+const int boxdraw_bold = 0;
+
+/* braille (U28XX):  1: render as adjacent "pixels",  0: use font */
+const int boxdraw_braille = 0;
 
 /*
  * bell volume. It must be a value between -100 and 100. Use 0 for disabling
@@ -88,46 +92,45 @@ char *termname = "st-256color";
  *
  *	stty tabs
  */
-unsigned int tabspaces = 4;
-
-/* bg opacity */
-unsigned int alpha = 0xff;
+unsigned int tabspaces = 8;
 
 /* Terminal colors (16 first used in escape sequence) */
 static const char *colorname[] = {
+	/* 8 normal colors */
+	"black",
+	"red3",
+	"green3",
+	"yellow3",
+	"blue2",
+	"magenta3",
+	"cyan3",
+	"gray90",
 
-  /* 8 normal colors */
-  [0] = "#1c202a", /* black   */
-  [1] = "#ed254e", /* red     */
-  [2] = "#29c583", /* green   */
-  [3] = "#ffd97d", /* yellow  */
-  [4] = "#4d9de0", /* blue    */
-  [5] = "#dd55ba", /* magenta */
-  [6] = "#23a6c1", /* cyan    */
-  [7] = "#cbe3f1", /* white   */
+	/* 8 bright colors */
+	"gray50",
+	"red",
+	"green",
+	"yellow",
+	"#5c5cff",
+	"magenta",
+	"cyan",
+	"white",
 
-  /* 8 bright colors */
-  [8]  = "#1c202a", /* black   */
-  [9]  = "#d12350", /* red     */
-  [10] = "#27b47b", /* green   */
-  [11] = "#ffa166", /* yellow  */
-  [12] = "#347fc4", /* blue    */
-  [13] = "#c4379f", /* magenta */
-  [14] = "#1998b3", /* cyan    */
-  [15] = "#9aafc4", /* white   */
+	[255] = 0,
 
-  /* special colors */
-  [256] = "#15171d", /* background */
-  [257] = "#cbe3f1", /* foreground */
+	/* more colors can be added after 255 to use with DefaultXX */
+	"#cccccc",
+	"#555555",
 };
+
 
 /*
  * Default colors (colorname index)
  * foreground, background, cursor, reverse cursor
  */
-unsigned int defaultfg = 257;
-unsigned int defaultbg = 256;
-static unsigned int defaultcs = 257;
+unsigned int defaultfg = 7;
+unsigned int defaultbg = 0;
+static unsigned int defaultcs = 256;
 static unsigned int defaultrcs = 257;
 
 /*
@@ -137,14 +140,14 @@ static unsigned int defaultrcs = 257;
  * 6: Bar ("|")
  * 7: Snowman ("☃")
  */
-static unsigned int cursorshape = 4;
+static unsigned int cursorshape = 2;
 
 /*
  * Default columns and rows numbers
  */
 
-static unsigned int cols = 100;
-static unsigned int rows = 25;
+static unsigned int cols = 80;
+static unsigned int rows = 24;
 
 /*
  * Default colour and shape of the mouse cursor
@@ -201,22 +204,19 @@ ResourcePref resources[] = {
  */
 static MouseShortcut mshortcuts[] = {
 	/* button               mask            string */
-	{ Button4,              XK_NO_MOD,     "\031" },
-	{ Button5,              XK_NO_MOD,     "\005" },
+	{ Button4,              XK_NO_MOD,      "\031" },
+	{ Button5,              XK_NO_MOD,      "\005" },
 };
 
 MouseKey mkeys[] = {
-        /* button               mask            function        argument */
-    	{ Button4,              ShiftMask,      kscrollup,      {.i =  1} },
-    	{ Button5,              ShiftMask,      kscrolldown,    {.i =  1} },
-		{ Button4,              ControlMask,    zoom,           {.f = +1} },
-		{ Button5,              ControlMask,    zoom,           {.f = -1} },
+	/* button               mask            function        argument */
+	{ Button4,              ShiftMask,      kscrollup,      {.i =  1} },
+	{ Button5,              ShiftMask,      kscrolldown,    {.i =  1} },
 };
 
 /* Internal keyboard shortcuts. */
 #define MODKEY Mod1Mask
 #define TERMMOD (ControlMask|ShiftMask)
-#define CMOD (Mod1Mask|ControlMask)
 
 static Shortcut shortcuts[] = {
 	/* mask                 keysym          function        argument */
@@ -230,14 +230,11 @@ static Shortcut shortcuts[] = {
 	{ TERMMOD,              XK_C,           clipcopy,       {.i =  0} },
 	{ TERMMOD,              XK_V,           clippaste,      {.i =  0} },
 	{ TERMMOD,              XK_Y,           selpaste,       {.i =  0} },
+	{ ShiftMask,            XK_Page_Up,     kscrollup,      {.i = -1} },
+	{ ShiftMask,            XK_Page_Down,   kscrolldown,    {.i = -1} },
+	{ ShiftMask,            XK_Insert,      selpaste,       {.i =  0} },
 	{ TERMMOD,              XK_Num_Lock,    numlock,        {.i =  0} },
- 	{ ShiftMask,            XK_Page_Up,     kscrollup,      {.i = -1} },
- 	{ ShiftMask,            XK_Page_Down,   kscrolldown,    {.i = -1} },
- 	{ ShiftMask,            XK_Up,          kscrollup,      {.i =  1} },
- 	{ ShiftMask,            XK_Down,        kscrolldown,    {.i =  1} },
- 	{ CMOD,                 XK_Up,          kscrollup,      {.i = -1} },
- 	{ CMOD,                 XK_Down,        kscrolldown,    {.i = -1} },
-    { TERMMOD,              XK_I,           iso14755,       {.i =  0} },
+	{ TERMMOD,              XK_I,           iso14755,       {.i =  0} },
 };
 
 /*

@@ -78,20 +78,20 @@ typedef union {
 } Arg;
 
 typedef struct {
-	uint b;
-	uint mask;
-	void (*func)(const Arg *);
-	const Arg arg;
+	 uint b;
+	 uint mask;
+	 void (*func)(const Arg *);
+	 const Arg arg;
 } MouseKey;
 
 void die(const char *, ...);
 void redraw(void);
 void draw(void);
 
+void iso14755(const Arg *);
+void externalpipe(const Arg *);
 void kscrolldown(const Arg *);
 void kscrollup(const Arg *);
-void externalpipe(const Arg *);
-void iso14755(const Arg *);
 void printscreen(const Arg *);
 void printsel(const Arg *);
 void sendbreak(const Arg *);
@@ -122,11 +122,12 @@ void *xmalloc(size_t);
 void *xrealloc(void *, size_t);
 char *xstrdup(char *);
 
-int isboxdraw(const Glyph *);
+int isboxdraw(Rune);
 ushort boxdrawindex(const Glyph *);
 #ifdef XFT_VERSION
 /* only exposed to x.c, otherwise we'll need Xft.h for the types */
-void drawboxes(XftDraw *, int, int, int, int, XftColor *, const XftGlyphFontSpec *, int);
+void boxdraw_xinit(Display *, Colormap, XftDraw *, Visual *);
+void drawboxes(int, int, int, int, XftColor *, XftColor *, const XftGlyphFontSpec *, int);
 #endif
 
 /* config.h globals */
@@ -137,8 +138,7 @@ extern char *worddelimiters;
 extern int allowaltscreen;
 extern char *termname;
 extern unsigned int tabspaces;
-extern unsigned int alpha;
 extern unsigned int defaultfg;
 extern unsigned int defaultbg;
-extern const int boxdraw;
 extern MouseKey mkeys[];
+extern const int boxdraw, boxdraw_bold, boxdraw_braille;

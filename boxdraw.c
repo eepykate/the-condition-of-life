@@ -1,65 +1,89 @@
+/*
+ * Copyright 2018 Avi Halachmi (:avih) avihpit@yahoo.com https://github.com/avih
+ * MIT/X Consortium License
+ */
+
 #include <X11/Xft/Xft.h>
 #include "st.h"
 #include "boxdraw_data.h"
 
-static void drawbox(XftDraw *, int, int, int, int, XftColor *, ushort);
-static void drawboxlines(XftDraw *, int, int, int, int, XftColor *, ushort);
+/* Rounded non-negative integers division of n / d  */
+#define DIV(n, d) (((n) + (d) / 2) / (d))
+
+static Display *xdpy;
+static Colormap xcmap;
+static XftDraw *xd;
+static Visual *xvis;
+
+static void drawbox(int, int, int, int, XftColor *, XftColor *, ushort);
+static void drawboxlines(int, int, int, int, XftColor *, ushort);
 
 /* public API */
 
-int
-isboxdraw(const Glyph *g)
+void
+boxdraw_xinit(Display *dpy, Colormap cmap, XftDraw *draw, Visual *vis)
 {
-	return (g->u & ~0xff) == 0x2500 &&
-	       boxdata[(uint8_t)g->u] != 0 &&
-	       (g->mode & ATTR_ITALIC) == 0;
+	xdpy = dpy; xcmap = cmap; xd = draw, xvis = vis;
+}
+
+int
+isboxdraw(Rune u)
+{
+	Rune block = u & ~0xff;
+	return (boxdraw && block == 0x2500 && boxdata[(uint8_t)u]) ||
+	       (boxdraw_braille && block == 0x2800);
 }
 
 /* the "index" is actually the entire shape data encoded as ushort */
 ushort
 boxdrawindex(const Glyph *g)
 {
-	return boxdata[(uint8_t)g->u] | ((g->mode & ATTR_BOLD) ? BDB : 0);
+	if (boxdraw_braille && (g->u & ~0xff) == 0x2800)
+		return BRL | (uint8_t)g->u;
+	if (boxdraw_bold && (g->mode & ATTR_BOLD))
+		return BDB | boxdata[(uint8_t)g->u];
+	return boxdata[(uint8_t)g->u];
 }
 
 void
-drawboxes(XftDraw *xd, int x, int y, int cw, int ch, XftColor *fg,
+drawboxes(int x, int y, int cw, int ch, XftColor *fg, XftColor *bg,
           const XftGlyphFontSpec *specs, int len)
 {
 	for ( ; len-- > 0; x += cw, specs++)
-		drawbox(xd, x, y, cw, ch, fg, (ushort)specs->glyph);
+		drawbox(x, y, cw, ch, fg, bg, (ushort)specs->glyph);
 }
 
 /* implementation */
 
 void
-drawbox(XftDraw *xd, int x, int y, int w, int h, XftColor *fg, ushort bd)
+drawbox(int x, int y, int w, int h, XftColor *fg, XftColor *bg, ushort bd)
 {
+	ushort cat = bd & ~(BDB | 0xff);  /* mask out bold and data */
 	if (bd & (BDL | BDA)) {
 		/* lines (light/double/heavy/arcs) */
-		drawboxlines(xd, x, y, w, h, fg, bd);
+		drawboxlines(x, y, w, h, fg, bd);
 
-	} else if (bd & BBD) {
+	} else if (cat == BBD) {
 		/* lower (8-X)/8 block */
-		int d = ((uint8_t)bd * h + 4) / 8;
+		int d = DIV((uint8_t)bd * h, 8);
 		XftDrawRect(xd, fg, x, y + d, w, h - d);
 
-	} else if (bd & BBU) {
+	} else if (cat == BBU) {
 		/* upper X/8 block */
-		XftDrawRect(xd, fg, x, y, w, ((uint8_t)bd * h + 4) / 8);
+		XftDrawRect(xd, fg, x, y, w, DIV((uint8_t)bd * h, 8));
 
-	} else if (bd & BBL) {
+	} else if (cat == BBL) {
 		/* left X/8 block */
-		XftDrawRect(xd, fg, x, y, ((uint8_t)bd * w + 4) / 8, h);
+		XftDrawRect(xd, fg, x, y, DIV((uint8_t)bd * w, 8), h);
 
-	} else if (bd & BBR) {
+	} else if (cat == BBR) {
 		/* right (8-X)/8 block */
-		int d = ((uint8_t)bd * w + 4) / 8;
+		int d = DIV((uint8_t)bd * w, 8);
 		XftDrawRect(xd, fg, x + d, y, w - d, h);
 
-	} else if (bd & BBQ) {
+	} else if (cat == BBQ) {
 		/* Quadrants */
-		int w2 = (w + 1) / 2, h2 = (h + 1) / 2;
+		int w2 = DIV(w, 2), h2 = DIV(h, 2);
 		if (bd & TL)
 			XftDrawRect(xd, fg, x, y, w2, h2);
 		if (bd & TR)
@@ -68,20 +92,49 @@ drawbox(XftDraw *xd, int x, int y, int w, int h, XftColor *fg, ushort bd)
 			XftDrawRect(xd, fg, x, y + h2, w2, h - h2);
 		if (bd & BR)
 			XftDrawRect(xd, fg, x + w2, y + h2, w - w2, h - h2);
+
+	} else if (bd & BBS) {
+		/* Shades - data is 1/2/3 for 25%/50%/75% alpha, respectively */
+		int d = (uint8_t)bd;
+		XftColor xfc;
+		XRenderColor xrc = { .alpha = 0xffff };
+
+		xrc.red = DIV(fg->color.red * d + bg->color.red * (4 - d), 4);
+		xrc.green = DIV(fg->color.green * d + bg->color.green * (4 - d), 4);
+		xrc.blue = DIV(fg->color.blue * d + bg->color.blue * (4 - d), 4);
+
+		XftColorAllocValue(xdpy, xvis, xcmap, &xrc, &xfc);
+		XftDrawRect(xd, &xfc, x, y, w, h);
+		XftColorFree(xdpy, xvis, xcmap, &xfc);
+
+	} else if (cat == BRL) {
+		/* braille, each data bit corresponds to one dot at 2x4 grid */
+		int w1 = DIV(w, 2);
+		int h1 = DIV(h, 4), h2 = DIV(h, 2), h3 = DIV(3 * h, 4);
+
+		if (bd & 1)   XftDrawRect(xd, fg, x, y, w1, h1);
+		if (bd & 2)   XftDrawRect(xd, fg, x, y + h1, w1, h2 - h1);
+		if (bd & 4)   XftDrawRect(xd, fg, x, y + h2, w1, h3 - h2);
+		if (bd & 8)   XftDrawRect(xd, fg, x + w1, y, w - w1, h1);
+		if (bd & 16)  XftDrawRect(xd, fg, x + w1, y + h1, w - w1, h2 - h1);
+		if (bd & 32)  XftDrawRect(xd, fg, x + w1, y + h2, w - w1, h3 - h2);
+		if (bd & 64)  XftDrawRect(xd, fg, x, y + h3, w1, h - h3);
+		if (bd & 128) XftDrawRect(xd, fg, x + w1, y + h3, w - w1, h - h3);
+
 	}
 }
 
 void
-drawboxlines(XftDraw *xd, int x, int y, int w, int h, XftColor *fg, ushort bd)
+drawboxlines(int x, int y, int w, int h, XftColor *fg, ushort bd)
 {
 	/* s: stem thickness. width/8 roughly matches underscore thickness. */
 	/* We draw bold as 1.5 * normal-stem and at least 1px thicker.      */
 	/* doubles draw at least 3px, even when w or h < 3. bold needs 6px. */
 	int mwh = MIN(w, h);
-	int base_s = MAX(1, (mwh + 4) / 8);
+	int base_s = MAX(1, DIV(mwh, 8));
 	int bold = (bd & BDB) && mwh >= 6;  /* possibly ignore boldness */
-	int s = bold ? MAX(base_s + 1, (3 * base_s + 1) / 2) : base_s;
-	int w2 = (w - s + 1) / 2, h2 = (h - s + 1) / 2;
+	int s = bold ? MAX(base_s + 1, DIV(3 * base_s, 2)) : base_s;
+	int w2 = DIV(w - s, 2), h2 = DIV(h - s, 2);
 	/* the s-by-s square (x + w2, y + h2, s, s) is the center texel.    */
 	/* The base length (per direction till edge) includes this square.  */
 
