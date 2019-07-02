@@ -95,7 +95,7 @@ char *termname = "st-256color";
 unsigned int tabspaces = 2;
 
 /* bg opacity */
-float alpha = 0.8;
+float alpha = 1;
 
 /* Terminal colors (16 first used in escape sequence) */
 static const char *colorname[] = {
@@ -197,6 +197,7 @@ ResourcePref resources[] = {
 		{ "bellvolume",   INTEGER, &bellvolume },
 		{ "tabspaces",    INTEGER, &tabspaces },
 		{ "borderpx",     INTEGER, &borderpx },
+		{ "alpha",        FLOAT,   &alpha },
 		{ "cwscale",      FLOAT,   &cwscale },
 		{ "chscale",      FLOAT,   &chscale },
 };
