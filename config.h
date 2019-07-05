@@ -216,6 +216,8 @@ MouseKey mkeys[] = {
 	/* button               mask            function        argument */
 	{ Button4,              ShiftMask,      kscrollup,      {.i =  1} },
 	{ Button5,              ShiftMask,      kscrolldown,    {.i =  1} },
+  { Button4,              ControlMask,    zoom,           {.f = +1} },
+  { Button5,              ControlMask,    zoom,           {.f = -1} },
 };
 
 /* Credit to Luke Smith */
