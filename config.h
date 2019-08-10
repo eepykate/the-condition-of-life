@@ -9,8 +9,8 @@ static char *font = "Iosevka Term:pixelsize=11:antialias=true:autohint=true";
 static int borderpx = 15;
 
 /* disable bold, italic and roman fonts globally */
-int disablebold = 1;
-int disableitalic = 1;
+int disablebold = 0;
+int disableitalic = 0;
 int disableroman = 0;
 
 /*
@@ -227,11 +227,11 @@ MouseKey mkeys[] = {
 
 /* Credit to Luke Smith */
 static char *openurlcmd[] = { "/bin/sh", "-c",
-    "sed 's/.*│//g' | tr -d '\n' | grep -aEo '((http|https)://|www\\.)[a-zA-Z0-9./&?=_-]*' | uniq | sed 's/^www./http:\\/\\/www\\./g' | dmenu -p 'Follow which url?' -l 10 | xargs -r xdg-open",
+    "sed 's/.*│//g' | tr -d '\n' | grep -aEo '((http|https)://|www\\.)[a-zA-Z0-9.:/&?=_-]*' | uniq | sed 's/^www./http:\\/\\/www\\./g' | dmenu -p 'Follow which url?' -l 10 | xargs -r xdg-open",
     "externalpipe", NULL };
 
 static char *copyurlcmd[] = { "/bin/sh", "-c",
-    "sed 's/.*│//g' | tr -d '\n' | grep -aEo '((http|https)://|www\\.)[a-zA-Z0-9./&?=_-]*' | uniq | sed 's/^www./http:\\/\\/www\\./g' | dmenu -p 'Copy which url?' -l 10 | tr -d '\n' | xclip -selection clipboard",
+    "sed 's/.*│//g' | tr -d '\n' | grep -aEo '((http|https)://|www\\.)[a-zA-Z0-9.:/&?=_-]*' | uniq | sed 's/^www./http:\\/\\/www\\./g' | dmenu -p 'Copy which url?' -l 10 | tr -d '\n' | xclip -selection clipboard",
     "externalpipe", NULL };
 
 static char *copyoutput[] = { "/bin/sh", "-c", "st-copyout", "externalpipe", NULL };
