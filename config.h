@@ -8,11 +8,6 @@
 static char *font = "Iosevka Term:pixelsize=11:antialias=true:autohint=true";
 static int borderpx = 15;
 
-/* disable bold, italic and roman fonts globally */
-int disablebold = 0;
-int disableitalic = 0;
-int disableroman = 0;
-
 /*
  * What program is execed by st depends of these precedence rules:
  * 1: program passed with -e
