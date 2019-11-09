@@ -5,8 +5,8 @@
  *
  * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
  */
-static char *font = "Iosevka Term:pixelsize=11:antialias=true:autohint=true";
-static int borderpx = 15;
+static char *font = "Fira Mono:pixelsize=10:style=bold";
+static int borderpx = 50;
 
 /* disable bold, italic and roman fonts globally */
 int disablebold = 1;
@@ -105,34 +105,33 @@ float alpha = 1;
 /* Terminal colors (16 first used in escape sequence) */
 static const char *colorname[] = {
 	/* 8 normal colors */
-	"#303644",
-	"#dc8189",
-	"#b7cc97",
-	"#e6b694",
-	"#9ab2dc",
-	"#d0a3d4",
-	"#93b5e0",
-	"#8888a0",
+	"#1c1e22",
+	"#e56f92",
+	"#8cd7aa",
+	"#e9967e",
+	"#79aaeb",
+	"#c488ec",
+	"#7abce4",
+	"#a6a9b7",
 
 	/* 8 bright colors */
-	"#424960",
-	"#dc8189",
-	"#b7cc97",
-	"#e6b694",
-	"#9ab2dc",
-	"#d0a3d4",
-	"#93b5e0",
-	"#cfcff9",
+	"#484e5b",
+	"#e56f92",
+	"#8cd7aa",
+	"#e9967e",
+	"#79aaeb",
+	"#c488ec",
+	"#7abce4",
+	"#daddee",
 
-
-	"#9ab2dc",
-	"#dc8189",
+	"#79aaeb",
+	"#c488ec",
 
 	[255] = "#232731",
 
 	/* more colors can be added after 255 to use with DefaultXX */
-	"#232731",
-	"#cfcff9",
+	"#18191c",
+	"#daddee",
 };
 
 
