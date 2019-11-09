@@ -1,4 +1,4 @@
-### GaugeK's build of simple terminal with the following patches applied:
+### GaugeK's build of suckless' st with the following patches applied:
 
 - Alpha
 
