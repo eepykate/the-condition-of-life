@@ -191,6 +191,8 @@ static int match(uint, uint);
 static void run(void);
 static void usage(void);
 
+static void config_init(void);
+
 static void (*handler[LASTEvent])(XEvent *) = {
 	[KeyPress] = kpress,
 	[ClientMessage] = cmessage,
@@ -743,13 +745,13 @@ xloadcolor(int i, const char *name, Color *ncolor)
 	XRenderColor color = { .alpha = 0xffff };
 
 	if (!name) {
-		if (BETWEEN(i, 16, 255)) { /* 256 color */
-			if (i < 6*6*6+16) { /* same colors as xterm */
-				color.red   = sixd_to_16bit( ((i-16)/36)%6 );
-				color.green = sixd_to_16bit( ((i-16)/6) %6 );
-				color.blue  = sixd_to_16bit( ((i-16)/1) %6 );
+		if (BETWEEN(i, 18, 255)) { /* 256 color */
+			if (i < 6*6*6+18) { /* same colors as xterm */
+				color.red   = sixd_to_16bit( ((i-18)/36)%6 );
+				color.green = sixd_to_16bit( ((i-18)/6) %6 );
+				color.blue  = sixd_to_16bit( ((i-18)/1) %6 );
 			} else { /* greyscale */
-				color.red = 0x0808 + 0x0a0a * (i - (6*6*6+16));
+				color.red = 0x0808 + 0x0a0a * (i - (6*6*6+18));
 				color.green = color.blue = color.red;
 			}
 			return XftColorAllocValue(xw.dpy, xw.vis,
@@ -1790,7 +1792,6 @@ kpress(XEvent *ev)
 	ttywrite(buf, len, 1);
 }
 
-
 void
 cmessage(XEvent *e)
 {
@@ -1808,6 +1809,13 @@ cmessage(XEvent *e)
 	} else if (e->xclient.data.l[0] == xw.wmdeletewin) {
 		ttyhangup();
 		exit(0);
+	} else if (strcmp(XGetAtomName(xw.dpy, e->xclient.message_type), "ReloadColors") == 0) {
+		config_init();
+		xunloadfonts();
+		usedfont = (opt_font == NULL)? font : opt_font;
+		xloadfonts(usedfont, 0);
+		xloadcols();
+		cresize(win.w, win.h);
 	}
 }
 
@@ -1841,6 +1849,7 @@ run(void)
 		 */
 		if (XFilterEvent(&ev, None))
 			continue;
+
 		if (ev.type == ConfigureNotify) {
 			w = ev.xconfigure.width;
 			h = ev.xconfigure.height;
@@ -1919,7 +1928,7 @@ run(void)
 								lastblink)));
 					}
 					drawtimeout.tv_sec = \
-					    drawtimeout.tv_nsec / 1E9;
+						drawtimeout.tv_nsec / 1E9;
 					drawtimeout.tv_nsec %= (long)1E9;
 				} else {
 					tv = NULL;
@@ -1973,7 +1982,7 @@ config_init(void)
 	ResourcePref *p;
 
 	XrmInitialize();
-	resm = XResourceManagerString(xw.dpy);
+	resm = XResourceManagerString(XOpenDisplay(NULL)); // the RESOURCE_MANAGER property isn't updated
 	if (!resm)
 		return;
 
