@@ -17,3 +17,5 @@
 - Scrollback-Mouse
 
 - Xresources
+
+- [Live-reload](https://github.com/PaxPlay/st) (Modified to reload more than just colours)
