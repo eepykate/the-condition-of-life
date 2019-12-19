@@ -2005,6 +2005,19 @@ usage(void)
 }
 
 int
+reload(void) {
+	config_init();
+	xunloadfonts();
+	usedfont = (opt_font == NULL)? font : opt_font;
+	xloadfonts(usedfont, 0);
+	xloadcols();
+	cresize(win.w, win.h);cresize(win.w, win.h);
+	ttywrite("\033[O", 3, 0);
+
+	signal(SIGUSR1, reload);
+}
+
+int
 main(int argc, char *argv[])
 {
 	xw.l = xw.t = 0;
@@ -2074,6 +2087,7 @@ run:
 	config_init();
 	cols = MAX(cols, 1);
 	rows = MAX(rows, 1);
+	signal(SIGUSR1, reload);
 	tnew(cols, rows);
 	xinit(cols, rows);
 	xsetenv();
