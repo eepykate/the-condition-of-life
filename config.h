@@ -127,6 +127,9 @@ static const char *colorname[] = {
 	"#79aaeb",
 	"#c488ec",
 
+	[231] = "#ffffff",
+	[232] = "#080808",
+
 	[255] = "#232731",
 
 	/* more colors can be added after 255 to use with DefaultXX */
@@ -163,9 +166,9 @@ static unsigned int rows = 24;
 /*
  * Default colour and shape of the mouse cursor
  */
-static unsigned int mouseshape = XC_xterm;
-static unsigned int mousefg = 257;
-static unsigned int mousebg = 256;
+static unsigned int mouseshape = XC_left_ptr;
+static unsigned int mousefg = 232;
+static unsigned int mousebg = 231;
 
 /*
  * Color used to display font attributes when fontconfig selected a font which
