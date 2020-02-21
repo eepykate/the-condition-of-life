@@ -2004,8 +2004,8 @@ usage(void)
 	    " [stty_args ...]\n", argv0, argv0);
 }
 
-int
-reload(void) {
+void
+reload(int asd) {
 	config_init();
 	xunloadfonts();
 	usedfont = (opt_font == NULL)? font : opt_font;
