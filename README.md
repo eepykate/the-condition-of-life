@@ -1,4 +1,8 @@
-### GaugeK's build of suckless' st with the following patches applied:
+## GaugeK's build of suckless' st
+
+Warning: This build is known not to work on manjaro.
+
+#### Patches:
 
 - Alpha
 
