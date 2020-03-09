@@ -10,8 +10,6 @@ Warning: This build is known not to work on manjaro.
 
 #### Patches:
 
-- Alpha
-
 - Bold Is Not Bright
 
 - Boxdraw
