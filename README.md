@@ -1,6 +1,7 @@
 ## GaugeK's build of suckless' st
 
-Warning: This build is known not to work on manjaro.
+Warning: This post contains annaisms and is annaware  
+Avoid at all costs.
 
 ## Installing:
 
