@@ -17,8 +17,6 @@ Avoid at all costs.
 
 - Disable Bold, Italic, and Roman fonts
 
-- Externalpipe
-
 - iso14755
 
 - Scrollback
