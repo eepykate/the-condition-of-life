@@ -743,8 +743,8 @@ xloadcolor(int i, const char *name, Color *ncolor)
 	XRenderColor color = { .alpha = 0xffff };
 
 	if (!name) {
-		if (BETWEEN(i, 18, 255)) { /* 256 color */
-			if (i < 6*6*6+18) { /* same colors as xterm */
+		if (BETWEEN(i, 19, 255)) { /* 256 color */
+			if (i < 6*6*6+19) { /* same colors as xterm */
 				color.red   = sixd_to_16bit( ((i-18)/36)%6 );
 				color.green = sixd_to_16bit( ((i-18)/6) %6 );
 				color.blue  = sixd_to_16bit( ((i-18)/1) %6 );

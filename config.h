@@ -123,6 +123,7 @@ static const char *colorname[] = {
 
 	"#79aaeb",
 	"#c488ec",
+	"#ffffff",
 
 	[231] = "#ffffff",
 	[232] = "#080808",
@@ -196,6 +197,7 @@ ResourcePref resources[] = {
 		{ "color15",      STRING,  &colorname[15] },
 		{ "color16",      STRING,  &colorname[16] },
 		{ "color17",      STRING,  &colorname[17] },
+		{ "color18",      STRING,  &colorname[18] },
 		{ "background",   STRING,  &colorname[256] },
 		{ "foreground",   STRING,  &colorname[257] },
 		{ "cursorColor",  STRING,  &colorname[258] },
