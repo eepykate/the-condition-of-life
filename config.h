@@ -9,7 +9,7 @@ static char *font = "Fira Mono:pixelsize=10:style=bold";
 static int borderpx = 50;
 
 /* disable bold, italic and roman fonts globally */
-int disablebold = 0;
+int disablebold = 1;
 int disableitalic = 0;
 int disableroman = 0;
 
