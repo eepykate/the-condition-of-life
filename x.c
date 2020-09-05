@@ -1512,7 +1512,7 @@ xdrawcursor(int cx, int cy, Glyph g, int ox, int oy, Glyph og)
 			break;
 		}
 	} else {
-		drawcol = dc.col[7];
+		drawcol = dc.col[8];
 		XftDrawRect(xw.draw, &drawcol,
 			borderpx + cx * win.cw,
 			borderpx + (cy + 1) * win.ch - \
