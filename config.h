@@ -158,8 +158,8 @@ static unsigned int cursorshape = 4;
  * Default columns and rows numbers
  */
 
-static unsigned int cols = 80;
-static unsigned int rows = 24;
+static unsigned int cols = 106;
+static unsigned int rows = 30;
 
 /*
  * Default colour and shape of the mouse cursor
@@ -328,7 +328,7 @@ static Key key[] = {
 	{ XK_KP_End,        ControlMask,    "\033[1;5F",    +1,    0},
 	{ XK_KP_End,        ShiftMask,      "\033[K",       -1,    0},
 	{ XK_KP_End,        ShiftMask,      "\033[1;2F",    +1,    0},
-	{ XK_KP_End,        XK_ANY_MOD,     "\033[4~",       0,    0},
+	{ XK_KP_End,        XK_ANY_MOD,     "\033[F",       0,    0},
 	{ XK_KP_Next,       ShiftMask,      "\033[6;2~",     0,    0},
 	{ XK_KP_Next,       XK_ANY_MOD,     "\033[6~",       0,    0},
 	{ XK_KP_Insert,     ShiftMask,      "\033[2;2~",    +1,    0},
@@ -421,7 +421,7 @@ static Key key[] = {
 	{ XK_End,           ControlMask,    "\033[1;5F",    +1,    0},
 	{ XK_End,           ShiftMask,      "\033[K",       -1,    0},
 	{ XK_End,           ShiftMask,      "\033[1;2F",    +1,    0},
-	{ XK_End,           XK_ANY_MOD,     "\033[4~",       0,    0},
+	{ XK_End,           XK_ANY_MOD,     "\033[F",       0,    0},
 	{ XK_Prior,         ControlMask,    "\033[5;5~",     0,    0},
 	{ XK_Prior,         ShiftMask,      "\033[5;2~",     0,    0},
 	{ XK_Prior,         XK_ANY_MOD,     "\033[5~",       0,    0},

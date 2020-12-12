@@ -1,6 +1,6 @@
-## GaugeK's build of suckless' st
+## gk's build of suckless' st
 
-Warning: This post contains annaisms and is annaware  
+Warning: This build contains annaisms and is annaware  
 Avoid at all costs.
 
 ## Installing:
