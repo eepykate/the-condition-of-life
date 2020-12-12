@@ -1,0 +1,78 @@
+diff --git a/x.c b/x.c
+index a9e4391..71df5db 100644
+--- a/x.c
++++ b/x.c
+@@ -203,6 +203,8 @@ static int match(uint, uint);
+ static void run(void);
+ static void usage(void);
+ 
++static void config_init(void);
++
+ static void (*handler[LASTEvent])(XEvent *) = {
+ 	[KeyPress] = kpress,
+ 	[ClientMessage] = cmessage,
+@@ -1884,6 +1886,10 @@ cmessage(XEvent *e)
+ 	} else if (e->xclient.data.l[0] == xw.wmdeletewin) {
+ 		ttyhangup();
+ 		exit(0);
++	} else if (strcmp(XGetAtomName(xw.dpy, e->xclient.message_type), "ReloadColors") == 0) {
++		config_init();
++		xloadcols();
++		cresize(win.w, win.h);
+ 	}
+ }
+ 
+@@ -1916,6 +1922,7 @@ run(void)
+ 		 */
+ 		if (XFilterEvent(&ev, None))
+ 			continue;
++
+ 		if (ev.type == ConfigureNotify) {
+ 			w = ev.xconfigure.width;
+ 			h = ev.xconfigure.height;
+@@ -2043,7 +2050,7 @@ config_init(void)
+ 	ResourcePref *p;
+ 
+ 	XrmInitialize();
+-	resm = XResourceManagerString(xw.dpy);
++	resm = XResourceManagerString(XOpenDisplay(NULL)); // the RESOURCE_MANAGER property isn't updated
+ 	if (!resm)
+ 		return;
+ 
+@@ -2065,6 +2072,28 @@ usage(void)
+ 	    " [stty_args ...]\n", argv0, argv0);
+ }
+ 
++void
++reload(int sig)
++{
++	config_init();
++
++	/* colors, fonts */
++	xloadcols();
++	xunloadfonts();
++	usedfont = (opt_font == NULL)? font : opt_font;
++	xloadfonts(usedfont, 0);
++
++	/* pretend the window just got resized */
++	cresize(win.w, win.h);
++
++	redraw();
++
++	/* triggers re-render if we're visible. */
++	ttywrite("\033[O", 3, 1);
++
++	signal(SIGUSR1, reload);
++}
++
+ int
+ main(int argc, char *argv[])
+ {
+@@ -2132,6 +2161,7 @@ run:
+ 	config_init();
+ 	cols = MAX(cols, 1);
+ 	rows = MAX(rows, 1);
++	signal(SIGUSR1, reload);
+ 	tnew(cols, rows);
+ 	xinit(cols, rows);
+ 	xsetenv();

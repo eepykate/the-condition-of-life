@@ -5,14 +5,14 @@
  *
  * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
  */
-static char *font = "Liberation Mono:pixelsize=12:antialias=true:autohint=true";
+static char *font = "Ubuntu Mono:pixelsize=10:style=bold";
 
 /* disable bold, italic and roman fonts globally */
-int disablebold = 0;
+int disablebold = 1;
 int disableitalic = 0;
 int disableroman = 0;
 
-static int borderpx = 2;
+static int borderpx = 30;
 
 /*
  * What program is execed by st depends of these precedence rules:
@@ -60,7 +60,7 @@ int allowwindowops = 0;
  * low minlatency will tear/flicker more, as it can "detect" idle too early.
  */
 static double minlatency = 8;
-static double maxlatency = 33;
+static double maxlatency = 20;
 
 /*
  * blinking timeout (set to 0 to disable blinking) for the terminal blinking
@@ -71,7 +71,7 @@ static unsigned int blinktimeout = 800;
 /*
  * thickness of underline and bar cursors
  */
-static unsigned int cursorthickness = 2;
+static unsigned int cursorthickness = 1;
 
 /*
  * 1: render most of the lines/blocks characters without using the font for
@@ -79,11 +79,11 @@ static unsigned int cursorthickness = 2;
  *    Bold affects lines thickness if boxdraw_bold is not 0. Italic is ignored.
  * 0: disable (render all U25XX glyphs normally from the font).
  */
-const int boxdraw = 0;
-const int boxdraw_bold = 0;
+const int boxdraw = 1;
+const int boxdraw_bold = 1;
 
 /* braille (U28XX):  1: render as adjacent "pixels",  0: use font */
-const int boxdraw_braille = 0;
+const int boxdraw_braille = 1;
 
 /*
  * bell volume. It must be a value between -100 and 100. Use 0 for disabling
@@ -92,7 +92,7 @@ const int boxdraw_braille = 0;
 static int bellvolume = 0;
 
 /* default TERM value */
-char *termname = "st-256color";
+char *termname = "xterm-256color";
 
 /*
  * spaces per tab
@@ -114,30 +114,35 @@ unsigned int tabspaces = 8;
 /* Terminal colors (16 first used in escape sequence) */
 static const char *colorname[] = {
 	/* 8 normal colors */
-	"black",
-	"red3",
-	"green3",
-	"yellow3",
-	"blue2",
-	"magenta3",
-	"cyan3",
-	"gray90",
+	"151823",
+	"eb9797",
+	"eec299",
+	"d6e4ab",
+	"b3e8e8",
+	"b6d0fd",
+	"d6b1f0",
+	"9294a8",
 
 	/* 8 bright colors */
-	"gray50",
-	"red",
-	"green",
-	"yellow",
-	"#5c5cff",
-	"magenta",
-	"cyan",
-	"white",
+	"5c5c80",
+	"eb9797",
+	"eec299",
+	"d6e4ab",
+	"b3e8e8",
+	"b6d0fd",
+	"d6b1f0",
+	"d6d8eb",
+
+	/* annaisms :) */
+	"#b6d0fd",
+	"#d6b1f0",
+	"#232733",
 
 	[255] = 0,
 
 	/* more colors can be added after 255 to use with DefaultXX */
-	"#cccccc",
-	"#555555",
+	"#151823",
+	"#d6d8eb",
 };
 
 
@@ -145,9 +150,9 @@ static const char *colorname[] = {
  * Default colors (colorname index)
  * foreground, background, cursor, reverse cursor
  */
-unsigned int defaultfg = 7;
-unsigned int defaultbg = 0;
-static unsigned int defaultcs = 256;
+unsigned int defaultfg = 257;
+unsigned int defaultbg = 256;
+static unsigned int defaultcs = 257;
 static unsigned int defaultrcs = 257;
 
 /*
@@ -157,21 +162,21 @@ static unsigned int defaultrcs = 257;
  * 6: Bar ("|")
  * 7: Snowman ("☃")
  */
-static unsigned int cursorshape = 2;
+static unsigned int cursorshape = 4;
 
 /*
  * Default columns and rows numbers
  */
 
-static unsigned int cols = 80;
-static unsigned int rows = 24;
+static unsigned int cols = 106;
+static unsigned int rows = 30;
 
 /*
  * Default colour and shape of the mouse cursor
  */
-static unsigned int mouseshape = XC_xterm;
-static unsigned int mousefg = 7;
-static unsigned int mousebg = 0;
+static unsigned int mouseshape = XC_left_ptr;
+static unsigned int mousefg = 232;
+static unsigned int mousebg = 231;
 
 /*
  * Color used to display font attributes when fontconfig selected a font which
@@ -190,37 +195,41 @@ static uint forcemousemod = ShiftMask;
  * Xresources preferences to load at startup
  */
 ResourcePref resources[] = {
-		{ "font",         STRING,  &font },
-		{ "color0",       STRING,  &colorname[0] },
-		{ "color1",       STRING,  &colorname[1] },
-		{ "color2",       STRING,  &colorname[2] },
-		{ "color3",       STRING,  &colorname[3] },
-		{ "color4",       STRING,  &colorname[4] },
-		{ "color5",       STRING,  &colorname[5] },
-		{ "color6",       STRING,  &colorname[6] },
-		{ "color7",       STRING,  &colorname[7] },
-		{ "color8",       STRING,  &colorname[8] },
-		{ "color9",       STRING,  &colorname[9] },
-		{ "color10",      STRING,  &colorname[10] },
-		{ "color11",      STRING,  &colorname[11] },
-		{ "color12",      STRING,  &colorname[12] },
-		{ "color13",      STRING,  &colorname[13] },
-		{ "color14",      STRING,  &colorname[14] },
-		{ "color15",      STRING,  &colorname[15] },
-		{ "background",   STRING,  &colorname[256] },
-		{ "foreground",   STRING,  &colorname[257] },
-		{ "cursorColor",  STRING,  &colorname[258] },
-		{ "termname",     STRING,  &termname },
-		{ "shell",        STRING,  &shell },
-		{ "minlatency",   INTEGER, &minlatency },
-		{ "maxlatency",   INTEGER, &maxlatency },
-		{ "blinktimeout", INTEGER, &blinktimeout },
-		{ "bellvolume",   INTEGER, &bellvolume },
-		{ "tabspaces",    INTEGER, &tabspaces },
-		{ "borderpx",     INTEGER, &borderpx },
-		{ "cwscale",      FLOAT,   &cwscale },
-		{ "chscale",      FLOAT,   &chscale },
+	{ "font",         STRING,  &font },
+	{ "color0",       STRING,  &colorname[0] },
+	{ "color1",       STRING,  &colorname[1] },
+	{ "color2",       STRING,  &colorname[2] },
+	{ "color3",       STRING,  &colorname[3] },
+	{ "color4",       STRING,  &colorname[4] },
+	{ "color5",       STRING,  &colorname[5] },
+	{ "color6",       STRING,  &colorname[6] },
+	{ "color7",       STRING,  &colorname[7] },
+	{ "color8",       STRING,  &colorname[8] },
+	{ "color9",       STRING,  &colorname[9] },
+	{ "color10",      STRING,  &colorname[10] },
+	{ "color11",      STRING,  &colorname[11] },
+	{ "color12",      STRING,  &colorname[12] },
+	{ "color13",      STRING,  &colorname[13] },
+	{ "color14",      STRING,  &colorname[14] },
+	{ "color15",      STRING,  &colorname[15] },
+	{ "color16",      STRING,  &colorname[16] },
+	{ "color17",      STRING,  &colorname[17] },
+	{ "color18",      STRING,  &colorname[18] },
+	{ "background",   STRING,  &colorname[256] },
+	{ "foreground",   STRING,  &colorname[257] },
+	{ "cursorColor",  STRING,  &colorname[258] },
+	{ "termname",     STRING,  &termname },
+	{ "shell",        STRING,  &shell },
+	{ "minlatency",   INTEGER, &minlatency },
+	{ "maxlatency",   INTEGER, &maxlatency },
+	{ "blinktimeout", INTEGER, &blinktimeout },
+	{ "bellvolume",   INTEGER, &bellvolume },
+	{ "tabspaces",    INTEGER, &tabspaces },
+	{ "borderpx",     INTEGER, &borderpx },
+	{ "cwscale",      FLOAT,   &cwscale },
+	{ "chscale",      FLOAT,   &chscale },
 };
+
 
 /*
  * Internal mouse shortcuts.
@@ -228,8 +237,10 @@ ResourcePref resources[] = {
  */
 static MouseShortcut mshortcuts[] = {
 	/* mask                 button   function        argument       release */
-	{ ShiftMask,            Button4, kscrollup,      {.i = 1} },
-	{ ShiftMask,            Button5, kscrolldown,    {.i = 1} },
+	{ ShiftMask,            Button4, kscrollup,      {.i = 3} },
+	{ ShiftMask,            Button5, kscrolldown,    {.i = 3} },
+	{ ControlMask,          Button4, zoom,           {.f = +1} },
+	{ ControlMask,          Button5, zoom,           {.f = -1} },
 	{ XK_ANY_MOD,           Button2, selpaste,       {.i = 0},      1 },
 	{ ShiftMask,            Button4, ttysend,        {.s = "\033[5;2~"} },
 	{ XK_ANY_MOD,           Button4, ttysend,        {.s = "\031"} },
@@ -257,6 +268,8 @@ static Shortcut shortcuts[] = {
 	{ TERMMOD,              XK_Num_Lock,    numlock,        {.i =  0} },
 	{ ShiftMask,            XK_Page_Up,     kscrollup,      {.i = -1} },
 	{ ShiftMask,            XK_Page_Down,   kscrolldown,    {.i = -1} },
+	{ ShiftMask,            XK_Up,          kscrollup,      {.i =  1} },
+	{ ShiftMask,            XK_Down,        kscrolldown,    {.i =  1} },
 };
 
 /*
@@ -334,7 +347,7 @@ static Key key[] = {
 	{ XK_KP_Delete,     ControlMask,    "\033[3;5~",    +1,    0},
 	{ XK_KP_Delete,     ShiftMask,      "\033[2K",      -1,    0},
 	{ XK_KP_Delete,     ShiftMask,      "\033[3;2~",    +1,    0},
-	{ XK_KP_Delete,     XK_ANY_MOD,     "\033[P",       -1,    0},
+	{ XK_KP_Delete,     XK_ANY_MOD,     "\033[3~",      -1,    0},
 	{ XK_KP_Delete,     XK_ANY_MOD,     "\033[3~",      +1,    0},
 	{ XK_KP_Multiply,   XK_ANY_MOD,     "\033Oj",       +2,    0},
 	{ XK_KP_Add,        XK_ANY_MOD,     "\033Ok",       +2,    0},
@@ -402,7 +415,7 @@ static Key key[] = {
 	{ XK_Delete,        ControlMask,    "\033[3;5~",    +1,    0},
 	{ XK_Delete,        ShiftMask,      "\033[2K",      -1,    0},
 	{ XK_Delete,        ShiftMask,      "\033[3;2~",    +1,    0},
-	{ XK_Delete,        XK_ANY_MOD,     "\033[P",       -1,    0},
+	{ XK_Delete,        XK_ANY_MOD,     "\033[3~",      -1,    0},
 	{ XK_Delete,        XK_ANY_MOD,     "\033[3~",      +1,    0},
 	{ XK_BackSpace,     XK_NO_MOD,      "\177",          0,    0},
 	{ XK_BackSpace,     Mod1Mask,       "\033\177",      0,    0},
