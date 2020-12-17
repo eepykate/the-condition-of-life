@@ -1,6 +1,7 @@
 # gk's st
 Warning: This build contains annaisms and is annaware  
 Avoid at all costs.
+<https://gitlab.com/zanc/xft>
 
 ### Patches:
  - boxdraw
