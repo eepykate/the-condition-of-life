@@ -4,38 +4,38 @@
  * font: see http://freedesktop.org/software/fontconfig/fontconfig-user.html
  */
 
-static char *font = "Ubuntu Mono:pixelsize=12:style=bold";
+static char *font = "Ubuntu Mono:pixelsize=12:style=regular";
 
 /* Terminal colors (16 first used in escape sequence) */
 static const char *colorname[] = {
 	/* 8 normal colors */
-	"#151823",
-	"#eb9797",
-	"#eec299",
-	"#d6e4ab",
-	"#b3e8e8",
-	"#b6d0fd",
-	"#d6b1f0",
-	"#9294a8",
+	"#ffffff",
+	"#cd5e79",
+	"#c97d4e",
+	"#6b9e4c",
+	"#5094b4",
+	"#4973b7",
+	"#b45aaa",
+	"#767676",
 
 	/* 8 bright colors */
-	"#5c5c80",
-	"#eb9797",
-	"#eec299",
-	"#d6e4ab",
-	"#b3e8e8",
-	"#b6d0fd",
-	"#d6b1f0",
-	"#d6d8eb",
+	"#bbc0c7",
+	"#cd5e79",
+	"#c97d4e",
+	"#6b9e4c",
+	"#5094b4",
+	"#4973b7",
+	"#b45aaa",
+	"#444444",
 
 	/* annaisms :) */
-	"#b6d0fd",
-	"#d6b1f0",
-	"#232733",
+	"#4973b7",
+	"#b45aaa",
+	"#ffffff",
 
 	[255] = 0,
 
 	/* more colors can be added after 255 to use with DefaultXX */
-	"#151823",
-	"#d6d8eb"
+	"#ffffff",
+	"#444444"
 };

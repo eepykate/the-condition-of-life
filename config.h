@@ -2,7 +2,7 @@
 /* See LICENSE file for copyright and license details. */
 
 /* disable bold, italic and roman fonts globally */
-int disablebold = 1;
+int disablebold = 0;
 int disableitalic = 0;
 int disableroman = 0;
 
@@ -27,7 +27,7 @@ char *vtiden = "\033[?6c";
 
 /* Kerning / character bounding-box multipliers */
 static float cwscale = 1.0;
-static float chscale = 1.0;
+static float chscale = 1.1;
 
 /*
  * word delimiter string
@@ -127,8 +127,8 @@ static unsigned int cursorshape = 4;
  * Default columns and rows numbers
  */
 
-static unsigned int cols = 106;
-static unsigned int rows = 30;
+static unsigned int cols = 90;
+static unsigned int rows = 22;
 
 /*
  * Default colour and shape of the mouse cursor
