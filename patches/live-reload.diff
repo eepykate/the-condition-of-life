@@ -1,3 +1,6 @@
+Patch by @6gk & @vizs (https://github.com/6gk/st)
+Based on the one from @PaxPlay (https://github.com/PaxPlay/st)
+Must be applied after the xresources patch.
 diff --git a/x.c b/x.c
 index a9e4391..71df5db 100644
 --- a/x.c
